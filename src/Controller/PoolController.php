@@ -27,6 +27,11 @@ class PoolController{
 		{
 			$this->doCreateTeam();
 		}
+		else if($this->view->didUserPressViewPool() && $this->loginModel->checkLoginStatus())
+		{
+			
+			$this->doView();
+		}
 	}
 
 	public function doCreatePool()
@@ -104,6 +109,14 @@ class PoolController{
 		}
 
 		
+	}
+
+	public function doView()
+	{
+		$filter = $this->view->didUserPressViewPool();
+		$result = $this->db->fetchChosenPoolTeams($filter);
+		$this->view->showPickedPoolTeams($result, $filter);
+
 	}
 
 	

@@ -127,13 +127,11 @@ class LoginView extends HTMLView{
 
 
 	// Visar logga in sidan.
-		public function showLoginPage()
+		public function showLoginPage(Poollist $poollist)
 		{
 			
 
 			
-		
-
 			// Kontrollerar inloggningsstatus. Är användaren inloggad...Tilldelad kod.	
 			if($this->model->checkLoginStatus())
 			{				
@@ -178,9 +176,12 @@ class LoginView extends HTMLView{
 				$contentString<br>
 				<h2>Menu</h2>
 				<p><a href='?createpoollink'>Create pool</a></p>
-				<p><a href='?createteamlink'>Create team and add to pool</a></p>
-				
-				</div>";
+				<p><a href='?createteamlink'>Create team and add to pool</a></p><br><h2>Pools</h2>
+				"; foreach($poollist->toArray() as $pool)
+				   {
+				   		$HTMLbody .="<p><a href='?pool/".$pool->getName()."'>".$pool->getName()."</p>";
+				   }
+				$HTMLbody .="</div>";
 			}
 			$this->echoHTML($HTMLbody);
 		}

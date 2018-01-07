@@ -2,6 +2,7 @@
 	
 	require_once("TeamList.php");
 	require_once("PoolList.php");
+	require_once("PoolTeamList.php");
 
 class Database{
 
@@ -112,7 +113,7 @@ class Database{
 		{
 			
 				$db = $this -> connection();
-				$this->dbTable = self::$tblPool;
+				$this->dbTable = self::$tblPools;
 				$sql = "SELECT ". self::$name ." FROM `$this->dbTable` WHERE ". self::$name ." = ?";
 				$params = array($input);
 				$query = $db -> prepare($sql);
@@ -381,23 +382,24 @@ class Database{
 				}
 				return $eventbands;
 		}
-		//Hämtar endast vald livespelning från livespelningskolumnen i databasen och returnerar dessa.
-		public function fetchChosenEventInEventDropDown($eventdropdown)
+		//Filter teams on picked pool
+		public function fetchChosenPoolTeams($pool)
 		{
 				$db = $this -> connection();
-				$this->dbTable = self::$tblEventBand;
-				$sql = "SELECT * FROM `$this->dbTable` WHERE ". self::$event ." = ? GROUP BY ". self::$event ." ";
-				$params = array($eventdropdown);
+				$this->dbTable = self::$tblTeams;
+				$sql = "SELECT * FROM `$this->dbTable` WHERE ". self::$fkpoolname ." = ? GROUP BY ". self::$name ." ";
+				$params = array($pool);
 				
 				$query = $db -> prepare($sql);
 				$query -> execute($params);
 				$result = $query -> fetchall();
-				$eventbands = new EventBandList();
-				foreach ($result as $eventbanddb) {
-					$eventband = new EventBand($eventbanddb[self::$event], $eventbanddb[self::$id]);
-					$eventbands->add($eventband);
+				$poolTeams = new PoolTeamList();
+				foreach ($result as $poolteamdb) {
+					$poolTeam = new PoolTeam($poolteamdb[self::$name], $poolteamdb[self::$id]);
+					$poolTeams->add($poolTeam);
 				}
-				return $eventbands;
+
+				return $poolTeams;
 		}
 		//Hämtar alla betyg och returnerar dessa.
 		public function fetchAllTeams()
@@ -558,7 +560,7 @@ class Database{
 		public function addPool($input) {
 				try {
 					$db = $this -> connection();
-					$this->dbTable = self::$tblPool;
+					$this->dbTable = self::$tblPools;
 					$sql = "INSERT INTO $this->dbTable (".self::$name.") VALUES (?)";
 					$params = array($input);
 					$query = $db -> prepare($sql);

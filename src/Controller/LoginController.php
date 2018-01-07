@@ -55,12 +55,12 @@
 			}
 			if($this->model->checkLoginStatus() && $this->view->searchForCookies())
 			{
-				$this->view->showLoginPage();
+				$this->view->showLoginPage($this->db->fetchAllPools());
 			}
 			if($this->model->checkLoginStatus() && !$this->view->searchForCookies())
 			{
 				
-				$this->view->showLoginPage();
+				$this->view->showLoginPage($this->db->fetchAllPools());
 			}
 
 		}
@@ -69,7 +69,7 @@
 			if(!$this->view->didUserPressRegister() && !$this->view->didUserPressLogin() && !$this->model->checkLoginStatus())
 			{
 				
-				$this->view->showLoginPage();
+				$this->view->showLoginPage($this->db->fetchAllPools());
 			}
 
 
@@ -127,7 +127,7 @@
 			if(!$this->view->didUserPressLogout() && !$this->model->checkLoginStatus())
 			{
 					
-				$this->view->showLoginPage();
+				$this->view->showLoginPage($this->db->fetchAllPools());
 			}
 				
 			
@@ -185,7 +185,7 @@
 											if($this->model->UserRegistered())
 											{
 												$this->view->successfulRegistration();
-												$this->view->showLoginPage();
+												$this->view->showLoginPage($this->db->fetchAllPools());
 												
 											}
 											

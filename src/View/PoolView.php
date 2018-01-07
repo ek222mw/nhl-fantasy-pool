@@ -81,6 +81,24 @@ class PoolView extends HTMLView{
 					$this->echoHTML($HTMLbody);
 	}
 
+	public function showPickedPoolTeams(PoolTeamList $teamlist, $pool)
+	{
+		
+					
+				
+					 foreach($teamlist->toArray() as $team)
+					 {
+					 	$contentString = "<p><a href='team/". $team->getName()."'>".$team->getName()."</p>";
+					 }
+
+					$HTMLbody = "<div class='divaddevent'>
+					<h1>Pool ".$pool." </h1>
+					<p><a href='./?login'>Back</a></p>
+					$contentString<br>
+					</div>";
+					$this->echoHTML($HTMLbody);
+	}
+
 	public function didUserPressCreatePoolBtn()
 	{
 		if(isset($_POST[$this->createPoolButton]))
@@ -135,6 +153,21 @@ class PoolView extends HTMLView{
 			return false;
 		}
 	}
+
+	public function didUserPressViewPool()
+	{
+		$split = explode('/', $_SERVER['REQUEST_URI']);
+		$firstPart = $split[2];
+
+		
+		
+		if($firstPart === "?pool")
+		{	
+			return end($split);
+		}
+		return false;
+	}	
+
 
 
 
