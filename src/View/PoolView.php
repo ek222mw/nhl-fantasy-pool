@@ -88,12 +88,29 @@ class PoolView extends HTMLView{
 				
 					 foreach($teamlist->toArray() as $team)
 					 {
-					 	$contentString = "<p><a href='team/". $team->getName()."'>".$team->getName()."</p>";
+					 	$contentString = "<p><a href='?".$pool."/team/". $team->getName()."'>".$team->getName()."</p>";
 					 }
 
 					$HTMLbody = "<div class='divaddevent'>
 					<h1>Pool ".$pool." </h1>
 					<p><a href='./?login'>Back</a></p>
+					$contentString<br>
+					</div>";
+					$this->echoHTML($HTMLbody);
+	}
+
+	public function showPickedTeamPlayers(TeamPlayerList $playerlist, $team)
+	{				$split = explode('/', $_SERVER['REQUEST_URI']);
+					$filter =preg_replace("/[^a-zA-Z0-9]/", "", $split[2]);
+				
+					 foreach($playerlist->toArray() as $player)
+					 {
+					 	$contentString = "<p>Name: ".$player->getName()." Team: ".$player->getTeam()." Points: ".$player->getPoints()." G: ".$player->getGoals()." A: ".$player->getAssists()."</p>";
+					 }
+
+					$HTMLbody = "<div class='divaddevent'>
+					<h1>Team ".$team." </h1>
+					<p><a href='./?pool/".$filter."'>Back</a></p>
 					$contentString<br>
 					</div>";
 					$this->echoHTML($HTMLbody);
@@ -162,6 +179,17 @@ class PoolView extends HTMLView{
 		
 		
 		if($firstPart === "?pool")
+		{	
+			return end($split);
+		}
+		return false;
+	}
+
+	public function didUserPressViewTeam()
+	{
+		$split = explode('/', $_SERVER['REQUEST_URI']);
+		
+		if($split[3] === "team")
 		{	
 			return end($split);
 		}

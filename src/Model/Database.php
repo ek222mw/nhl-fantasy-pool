@@ -3,6 +3,7 @@
 	require_once("TeamList.php");
 	require_once("PoolList.php");
 	require_once("PoolTeamList.php");
+	require_once("TeamPlayerList.php");
 
 class Database{
 
@@ -18,7 +19,11 @@ class Database{
 		private static $band = "band";
 		private static $name = "name";
 		private static $id = "id";
+		private static $points = "points";
+		private static $goals = "goals";
+		private static $assists = "assists";
 		private static $fkpoolname = "fk_poolname";
+		private static $fkteam ="fk_team";
 		private static $grade = "grade";
 		private static $eventband = "eventband";
 		private static $username = "username";
@@ -31,6 +36,7 @@ class Database{
 		private static $tblEventBand = "eventband";
 		private static $tblSummaryGrade = "summarygrade";
 		private static $tblTeams = "teams";
+		private static $tblPlayers = "players";
 		private static $colId = "id";
 		private static $colusername = "username";
 		private static $colevent = "event";
@@ -400,6 +406,26 @@ class Database{
 				}
 
 				return $poolTeams;
+		}
+
+		//Filter teams on picked pool
+		public function fetchChosenTeamPlayers($team)
+		{
+				$db = $this -> connection();
+				$this->dbTable = self::$tblPlayers;
+				$sql = "SELECT * FROM `$this->dbTable` WHERE ". self::$fkteam ." = ? GROUP BY ". self::$name ." ";
+				$params = array($team);
+				
+				$query = $db -> prepare($sql);
+				$query -> execute($params);
+				$result = $query -> fetchall();
+				$teamPlayers = new TeamPlayerList();
+				foreach ($result as $teamplayerdb) {
+					$teamPlayer = new TeamPlayer($teamplayerdb[self::$name], $teamplayerdb[self::$id], $teamplayerdb[self::$team], $teamplayerdb[self::$points], $teamplayerdb[self::$goals], $teamplayerdb[self::$assists]);
+					$teamPlayers->add($teamPlayer);
+				}
+
+				return $teamPlayers;
 		}
 		//Hämtar alla betyg och returnerar dessa.
 		public function fetchAllTeams()
