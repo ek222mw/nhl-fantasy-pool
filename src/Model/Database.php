@@ -4,6 +4,7 @@
 	require_once("PoolList.php");
 	require_once("PoolTeamList.php");
 	require_once("TeamPlayerList.php");
+	require_once("ApiPlayerList.php");
 
 class Database{
 
@@ -22,6 +23,7 @@ class Database{
 		private static $points = "points";
 		private static $goals = "goals";
 		private static $assists = "assists";
+		private static $position = "position";
 		private static $fkpoolname = "fk_poolname";
 		private static $fkteam ="fk_team";
 		private static $grade = "grade";
@@ -36,6 +38,7 @@ class Database{
 		private static $tblEventBand = "eventband";
 		private static $tblSummaryGrade = "summarygrade";
 		private static $tblTeams = "teams";
+		private static $tblApiPlayers = "apiplayers";
 		private static $tblPlayers = "players";
 		private static $colId = "id";
 		private static $colusername = "username";
@@ -439,10 +442,29 @@ class Database{
 				$result = $query -> fetchall();
 				$teams = new TeamList();
 				foreach ($result as $teamdb) {
-					$team = new Team($teamdb[self::$team], $teamdb[self::$ID]);
+					$team = new Team($teamdb[self::$name], $teamdb[self::$id]);
 					$teams->add($team);
 				}
 				return $teams;
+		}
+
+		public function fetchAllApiPlayers()
+		{
+			$db = $this->connection();
+			$this->dbTable = self::$tblApiPlayers;
+			$sql = "SELECT * FROM `$this->dbTable`";
+
+			$query = $db->prepare($sql);
+			$query->execute();
+			$result = $query->fetchall();
+
+			$players = new ApiPlayerList();
+
+			foreach($result as $playerdb){
+				$player = new ApiPlayer($playerdb[self::$name], $playerdb[self::$id], $playerdb[self::$team], $playerdb[self::$points], $playerdb[self::$goals], $playerdb[self::$assists], $playerdb[self::$position]);
+				$players->add($player);
+			}
+			return $players;
 		}
 		//Hämtar alla band,id,livespelningar,betyg och användarnamn och returnerar dessa.
 		public function fetchShowAllEvents()

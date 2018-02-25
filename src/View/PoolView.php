@@ -12,6 +12,8 @@ class PoolView extends HTMLView{
 	private $createTeamName = "createteam";
 	private $createTeamLink = "createteamlink";
 	private $dropdownpickteam = "dropdownpickteam";
+	private $addPlayerToTeam = "addplayertoteam";
+	private $addPlayerToTeamBtn = "addplayerbtn";
 
 	public function __construct(PoolModel $model)
 	{
@@ -79,6 +81,46 @@ class PoolView extends HTMLView{
 					$contentString<br>
 					</div>";
 					$this->echoHTML($HTMLbody);
+	}
+
+	public function showAddPlayertoTeam(TeamList $teamlist, ApiPlayerList $playerlist)
+	{
+		
+
+		$contentString = 
+					 "
+					<form method=post >
+						<fieldset class='fieldaddevent'>
+							<legend>Add player to team</legend>
+							$this->message
+							<span style='white-space: nowrap'>Player:</span>
+							<select name='$this->dropdownpickteam'>";
+							 foreach($playerlist->toArray() as $player)
+							 {
+							 	$contentString.= "<option value='". $player->getName()."'>".$player->getName()."</option>";
+							 }
+							 
+							 $contentString .= "</select>
+							 <br>
+							 <span style='white-space: nowrap'>Add to Team:</span>
+							 <select name='$this->dropdownpickteam'>";
+							 foreach($teamlist->toArray() as $team)
+							 {
+							 	$contentString.= "<option value='". $team->getName()."'>".$team->getName()."</option>";
+							 }
+							 
+							 $contentString .= "</select>
+							 <br>
+							<span style='white-space: nowrap'></span> <input type='submit' name='$this->addPlayerToTeamBtn'  value='Add'>
+						</fieldset>
+					</form>";
+					$HTMLbody = "<div class='divaddevent'>
+					<h1>Create new team</h1>
+					<p><a href='?login'>Back</a></p>
+					$contentString<br>
+					</div>";
+					$this->echoHTML($HTMLbody);
+	
 	}
 
 	public function showPickedPoolTeams(PoolTeamList $teamlist, $pool)
@@ -194,9 +236,12 @@ class PoolView extends HTMLView{
 			return end($split);
 		}
 		return false;
+	}
+
+	public function didUserPressAddPlayerToTeam()
+	{
+		return isset($_GET[$this->addPlayerToTeam]);
 	}	
-
-
 
 
 	public function showMessage($message)

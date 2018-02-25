@@ -176,7 +176,9 @@ class LoginView extends HTMLView{
 				$contentString<br>
 				<h2>Menu</h2>
 				<p><a href='?createpoollink'>Create pool</a></p>
-				<p><a href='?createteamlink'>Create team and add to pool</a></p><br><h2>Pools</h2>
+				<p><a href='?createteamlink'>Create team and add to pool</a></p>
+				<p><a href='?addplayertoteam'>Add player to team</a></p>
+				<br><h2>Pools</h2>
 				"; foreach($poollist->toArray() as $pool)
 				   {
 				   		$HTMLbody .="<p><a href='?pool/".$pool->getName()."'>".$pool->getName()."</p>";

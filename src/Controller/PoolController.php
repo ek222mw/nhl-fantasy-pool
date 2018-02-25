@@ -32,6 +32,10 @@ class PoolController{
 			
 			$this->doView();
 		}
+		else if($this->view->didUserPressAddPlayerToTeam() && $this->loginModel->checkLoginStatus())
+		{
+			$this->doAddPlayerToTeam();
+		}
 	}
 
 	public function doCreatePool()
@@ -109,6 +113,11 @@ class PoolController{
 		}
 
 		
+	}
+
+	public function doAddPlayerToTeam()
+	{
+		$this->view->showAddPlayertoTeam($this->db->fetchAllTeams(), $this->db->fetchAllApiPlayers());
 	}
 
 	public function doView()
