@@ -117,7 +117,37 @@ class PoolController{
 
 	public function doAddPlayerToTeam()
 	{
-		$this->view->showAddPlayertoTeam($this->db->fetchAllTeams(), $this->db->fetchAllApiPlayers());
+		if($this->view->didUserPressAddPlayerToTeamBtn() && $this->loginModel->checkLoginStatus())
+		{
+			$teamInput = $this->view->getTeamDropdownInputAddPlayer();
+			$playerInput = $this->view->getPlayerDropdownInput();
+			try{
+				if($this->model->CheckLength($teamInput) && $this->model->CheckLength($playerInput))
+				{
+					if($this->loginModel->validateInput($teamInput) && $this->loginModel->validateInput($playerInput))
+					{
+						if($this->db->checkIfPlayerAlreadyExists($teamInput, $playerInput))
+						{
+							$playerArr = $this->db->fetchPickedApiPlayer($playerInput);
+							$this->db->addPlayerToTeam($teamInput, $playerArr);
+							$this->view->successfulAddPlayerToTeam();
+							$this->view->showAddPlayertoTeam($this->db->fetchAllTeams(), $this->db->fetchAllApiPlayers());
+						}
+						
+					}
+				}
+			}
+			catch(Exception $e)
+			{
+				$this->view->showMessage($e->getMessage());
+				$this->view->showAddPlayertoTeam($this->db->fetchAllTeams(), $this->db->fetchAllApiPlayers());
+			}
+
+		}
+		else{
+			$this->view->showAddPlayertoTeam($this->db->fetchAllTeams(), $this->db->fetchAllApiPlayers());
+		}
+		
 	}
 
 	public function doView()

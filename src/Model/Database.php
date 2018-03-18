@@ -177,6 +177,25 @@ class Database{
 					return true;
 				}
 		}
+
+		public function checkIfPlayerAlreadyExists($team, $player)
+		{
+				$db = $this -> connection();
+				$this->dbTable = self::$tblPlayers;
+				$sql = "SELECT ". self::$name .",". self::$fkteam ." FROM `".$this->dbTable."` WHERE ". self::$name ." = ? AND ". self::$fkteam ." = ?";
+				$params = array($team,$player);
+				$query = $db -> prepare($sql);
+				$query -> execute($params);
+				$result = $query -> fetch();
+				
+				
+				
+				if ($result[self::$name] !== null && $result[self::$fkteam] !== null ) {
+					throw new Exception("Player already exists in that team in database");
+				}else{
+					return true;
+				}
+		}
 		//Kontrollerar om användaren redan satt betyg på den livespelningen med det bandet. Om inte så returneras true annars kastas undantag.
 		public function checkIfGradeExistOnEventBandUser($eventdropdown,$banddropdown,$username)
 		{
@@ -466,6 +485,34 @@ class Database{
 			}
 			return $players;
 		}
+
+		public function fetchPickedApiPlayer($playername)
+		{
+			$db = $this->connection();
+			$this->dbTable = self::$tblApiPlayers;
+			$sql = "SELECT * FROM `$this->dbTable` WHERE ". self::$name ." = ? ";
+			$params = array($playername);
+
+			$query = $db->prepare($sql);
+			$query->execute($params);
+			$result = $query->fetchall();
+
+			$players = new ApiPlayerList();
+
+			if($result === null)
+			{
+				throw new Exception("Error couldn't find name in db");
+			}
+			else{
+					foreach($result as $playerdb){
+					$player = new ApiPlayer($playerdb[self::$name], $playerdb[self::$id], $playerdb[self::$team], $playerdb[self::$points], $playerdb[self::$goals], $playerdb[self::$assists], $playerdb[self::$position]);
+					$players->add($player);
+					}
+
+					return $players;
+			}
+			
+		}
 		//Hämtar alla band,id,livespelningar,betyg och användarnamn och returnerar dessa.
 		public function fetchShowAllEvents()
 		{
@@ -575,14 +622,49 @@ class Database{
 					die('An unknown error have occured.');
 				}
 		}
-		//Lägger till bandet till livespelningen.
-		public function addTeamToPool($team,$pool)
+			public function addTeamToPool($team,$pool)
 		{
 				try {
 					$db = $this -> connection();
 					$this->dbTable = self::$tblTeams;
 					$sql = "INSERT INTO $this->dbTable (".self::$name.",". self::$fkpoolname .") VALUES (?,?)";
 					$params = array($team,$pool);
+					$query = $db -> prepare($sql);
+					$query -> execute($params);
+					
+				} catch (\PDOException $e) {
+
+					die('An unknown error have occured.');
+				}
+		}
+
+		public function addPlayerToTeam($team,ApiPlayerList $player)
+		{
+
+				$name;
+				$playerteam;
+				$points;
+				$goals;
+				$assists;
+				$position;
+
+				foreach($player->toArray() as $rows)
+				{
+					$name = $rows->getName();
+					$playerteam = $rows->getTeam();
+					$points = $rows->getPoints();
+					$goals = $rows->getGoals();
+					$assists = $rows->getAssists();
+					$position = $rows->getPosition();
+				}
+
+				
+
+				try {
+					$db = $this -> connection();
+					$this->dbTable = self::$tblPlayers;
+					$sql = "INSERT INTO $this->dbTable (".self::$name.",".self::$team.",".self::$points.",".self::$goals.",".self::$assists.",".self::$position.",". self::$fkteam .") VALUES (?,?,?,?,?,?,?)";
+					$params = array($name,$playerteam,$points,$goals,$assists,$position,$team);
 					$query = $db -> prepare($sql);
 					$query -> execute($params);
 					

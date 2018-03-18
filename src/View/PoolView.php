@@ -12,8 +12,10 @@ class PoolView extends HTMLView{
 	private $createTeamName = "createteam";
 	private $createTeamLink = "createteamlink";
 	private $dropdownpickteam = "dropdownpickteam";
+	private $dropdownpickteam2 = "dropdownpickteam2";
+	private $dropdownpickplayer = "dropdownpickplayer";
 	private $addPlayerToTeam = "addplayertoteam";
-	private $addPlayerToTeamBtn = "addplayerbtn";
+	private $addPlayerToTeamBtn = "addplayertoteambtn";
 
 	public function __construct(PoolModel $model)
 	{
@@ -94,7 +96,7 @@ class PoolView extends HTMLView{
 							<legend>Add player to team</legend>
 							$this->message
 							<span style='white-space: nowrap'>Player:</span>
-							<select name='$this->dropdownpickteam'>";
+							<select name='$this->dropdownpickplayer'>";
 							 foreach($playerlist->toArray() as $player)
 							 {
 							 	$contentString.= "<option value='". $player->getName()."'>".$player->getName()."</option>";
@@ -103,7 +105,7 @@ class PoolView extends HTMLView{
 							 $contentString .= "</select>
 							 <br>
 							 <span style='white-space: nowrap'>Add to Team:</span>
-							 <select name='$this->dropdownpickteam'>";
+							 <select name='$this->dropdownpickteam2'>";
 							 foreach($teamlist->toArray() as $team)
 							 {
 							 	$contentString.= "<option value='". $team->getName()."'>".$team->getName()."</option>";
@@ -213,6 +215,37 @@ class PoolView extends HTMLView{
 		}
 	}
 
+	public function getTeamDropdownInputAddPlayer()
+	{
+		if(isset($_POST[$this->dropdownpickteam2]))
+		{
+			return $_POST[$this->dropdownpickteam2];
+		}
+		else{
+			return false;
+		}
+	}
+
+	public function getPlayerDropdownInput()
+	{
+		if(isset($_POST[$this->dropdownpickplayer]))
+		{
+			return $_POST[$this->dropdownpickplayer];
+		}
+		return false;
+	}
+
+	public function didUserPressAddPlayerToTeamBtn()
+	{
+		if(isset($_POST[$this->addPlayerToTeamBtn]))
+		{
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+
 	public function didUserPressViewPool()
 	{
 		$split = explode('/', $_SERVER['REQUEST_URI']);
@@ -258,5 +291,9 @@ class PoolView extends HTMLView{
 	public function successfulAddTeamToPool()
 	{
 		$this->showMessage("Teams was created and added to pool");
+	}
+	public function successfulAddPlayerToTeam()
+	{
+		$this->showMessage("Player was added to team");
 	}
 }
