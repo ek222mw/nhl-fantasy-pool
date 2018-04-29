@@ -36,6 +36,10 @@ class PoolController{
 		{
 			$this->doAddPlayerToTeam();
 		}
+		else if($this->view->didUserPressTrade() && $this->loginModel->checkLoginStatus())
+		{
+			$this->doTradePlayer();
+		}
 	}
 
 	public function doCreatePool()
@@ -146,6 +150,76 @@ class PoolController{
 		}
 		else{
 			$this->view->showAddPlayertoTeam($this->db->fetchAllTeams(), $this->db->fetchAllApiPlayers());
+		}
+		
+	}
+
+	public function doTradePlayer()
+	{
+		
+		
+		if($this->view->didUserPressPoolForTradeBtn())
+		{
+			$chosenPool = $this->view->getPoolForTradeInput();
+			try{
+				if(($this->model->CheckLength($chosenPool) && $this->loginModel->validateInput($chosenPool)))
+				{
+					
+					$this->view->showTeamForTrade($this->db->fetchChosenPoolTeams($chosenPool));
+				}
+			}
+			catch(Exception $e)
+			{
+				$this->view->showMessage($e->getMessage());
+				$this->view->showPoolForTrade($this->db->fetchAllPools());
+			}
+		}
+		else if($this->view->didUserPressTeamForTradeBtn())
+		{
+			$chosenTeam = $this->view->getTeamForTradeInput();
+			try{
+				if(($this->model->CheckLength($chosenTeam) && $this->loginModel->validateInput($chosenTeam)))
+				{
+					$this->view->showTeamPlayerstoTrade($this->db->fetchChosenTeamPlayers($chosenTeam), $this->db->fetchAllApiPlayers());
+				}
+			}
+			catch(Exception $e)
+			{
+				$this->view->showMessage($e->getMessage());
+				$this->view->showPoolForTrade($this->db->fetchAllPools());
+			}
+
+		}
+		else if($this->view->didUserPressPlayerForTradeBtn())
+		{
+			$apiplayer = $this->view->getApiPlayerForTradeInput();
+			$teamplayer = $this->view->getTeamPlayerForTradeInput();
+			try{
+
+
+				if(($this->model->CheckLength($apiplayer) && $this->loginModel->validateInput($apiplayer)) && ($this->model->CheckLength($apiplayer) && $this->loginModel->validateInput($apiplayer)))
+				{
+					if($this->db->checkIfPlayerisTaken($apiplayer))
+					{
+						$playerArr = $this->db->fetchPickedApiPlayer($apiplayer);
+						$this->db->tradePlayer($playerArr, $teamplayer);
+						$this->view->successfulTradedPlayerToTeam();
+						$this->view->showPoolForTrade($this->db->fetchAllPools());
+					}
+				}
+			}
+			catch(Exception $e)
+			{
+				$this->view->showMessage($e->getMessage());
+				$this->view->showPoolForTrade($this->db->fetchAllPools());
+			}	
+			
+
+
+		}
+		else if($this->view->didUserPressTrade())
+		{
+			$this->view->showPoolForTrade($this->db->fetchAllPools());
 		}
 		
 	}

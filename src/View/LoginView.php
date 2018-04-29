@@ -178,6 +178,7 @@ class LoginView extends HTMLView{
 				<p><a href='?createpoollink'>Create pool</a></p>
 				<p><a href='?createteamlink'>Create team and add to pool</a></p>
 				<p><a href='?addplayertoteam'>Add player to team</a></p>
+				<p><a href='?tradeplayer'>Trade player</a></p>
 				<br><h2>Pools</h2>
 				"; foreach($poollist->toArray() as $pool)
 				   {

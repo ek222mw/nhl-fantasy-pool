@@ -139,6 +139,29 @@ class Database{
 			
 		
 		}
+
+		public function checkIfPlayerisTaken($player)
+		{
+			
+				$db = $this -> connection();
+				$this->dbTable = self::$tblPlayers;
+				$sql = "SELECT ". self::$name ." FROM `$this->dbTable` WHERE ". self::$name ." = ?";
+				$params = array($player);
+				$query = $db -> prepare($sql);
+				$query -> execute($params);
+				$result = $query -> fetch();
+				
+				
+				
+				if ($result[self::$name] !== null) {
+					
+					throw new Exception("Player already exists in a team");
+				}else{
+					return true;
+				}
+			
+		
+		}
 		//Kontrollerar om bandet redan finns.Om inte så returneras true annars kastas undantag.
 		public function checkIfBandExist($inputband)
 		{
@@ -671,6 +694,43 @@ class Database{
 				} catch (\PDOException $e) {
 					die('An unknown error have occured.');
 				}
+		}
+
+		public function tradePlayer(ApiPlayerList $apiplayer,$pl)
+		{
+
+				$name;
+				$playerteam;
+				$points;
+				$goals;
+				$assists;
+				$position;
+
+				foreach($apiplayer->toArray() as $rows)
+				{
+					$name = $rows->getName();
+					$playerteam = $rows->getTeam();
+					$points = $rows->getPoints();
+					$goals = $rows->getGoals();
+					$assists = $rows->getAssists();
+					$position = $rows->getPosition();
+				}
+
+
+
+			try{
+				
+			$db = $this -> connection();
+			$this->dbTable = self::$tblPlayers;
+			$sql = "UPDATE $this->dbTable SET ". self::$name ."=?, ".self::$team." =?, ".self::$points."=?, ".self::$goals." =?, ".self::$assists." =?, ".self::$position." =? WHERE ". self::$name ."=?";
+			$params = array($name,$playerteam,$points,$goals,$assists,$position, $pl);
+			$query = $db -> prepare($sql);
+			$query -> execute($params);
+					
+			} catch (\PDOException $e) {
+					die('An unknown error have occured.');
+			}
+        
 		}
 		//Lägger till betyg till livespelning med angivet band till den inloggade användaren.
 		public function addGradeToEventBandWithUser($eventdropdown,$banddropdown,$gradedropdown,$username){

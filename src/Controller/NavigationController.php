@@ -22,7 +22,7 @@ class NavigationController{
 		$this->view = new LoginView($this->model);
 		$this->poolView = new poolView($this->PoolModel);
 
-		if(($this->poolView->didUserPressCreatePool() || $this->poolView->didUserPressCreateTeam() || $this->poolView->didUserPressViewPool() || $this->poolView->didUserPressViewTeam()) || $this->poolView->didUserPressAddPlayerToTeam()  && $this->model->checkLoginStatus())
+		if(($this->poolView->didUserPressCreatePool() || $this->poolView->didUserPressCreateTeam() || $this->poolView->didUserPressViewPool() || $this->poolView->didUserPressViewTeam() || $this->poolView->didUserPressAddPlayerToTeam() ||$this->poolView->didUserPressTrade()) && $this->model->checkLoginStatus())
 		{
 			
 			new PoolController();

@@ -16,6 +16,14 @@ class PoolView extends HTMLView{
 	private $dropdownpickplayer = "dropdownpickplayer";
 	private $addPlayerToTeam = "addplayertoteam";
 	private $addPlayerToTeamBtn = "addplayertoteambtn";
+	private $choosePoolTradeBtn = "choosepooltradebtn";
+	private $chooseTeamTradeBtn = "chooseteamtradebtn";
+	private $tradePlayerToTeamBtn = "tradeplayertoteambtn";
+	private $dropdownpickpoolfortrade = "dropdownpickpoolfortrade";
+	private $dropdownpickteamfortrade = "dropdownpickteamfortrade";
+	private $dropdownpicktradeapiplayer = "dropdownpicktradeapiplayer";
+	private $dropdownpicktradeteamplayer = "dropdownpicktradeteamplayer";
+	private $tradePlayerLink = "tradeplayer";
 
 	public function __construct(PoolModel $model)
 	{
@@ -33,6 +41,13 @@ class PoolView extends HTMLView{
 	{
 			 
 		return isset($_GET[$this->createTeamLink]);
+			
+	}
+
+	public function didUserPressTrade()
+	{
+			 
+		return isset($_GET[$this->tradePlayerLink]);
 			
 	}
 
@@ -125,6 +140,108 @@ class PoolView extends HTMLView{
 	
 	}
 
+	public function showPoolForTrade(PoolList $poollist)
+	{
+		
+
+		$contentString = 
+					 "
+					<form method=post >
+						<fieldset class='fieldaddevent'>
+							<legend>Choose pool for trade</legend>
+							$this->message
+							<span style='white-space: nowrap'>Pool:</span>
+							<select name='$this->dropdownpickpoolfortrade'>";
+							 foreach($poollist->toArray() as $pool)
+							 {
+							 	$contentString.= "<option value='". $pool->getName()."'>".$pool->getName()."</option>";
+							 }
+							 
+							 $contentString .= "</select>
+							 <br>
+							<span style='white-space: nowrap'></span> <input type='submit' name='$this->choosePoolTradeBtn'  value='Choose'>
+						</fieldset>
+					</form>";
+					$HTMLbody = "<div class='divaddevent'>
+					<h1>Trade player</h1>
+					<p><a href='?login'>Back</a></p>
+					$contentString<br>
+					</div>";
+					$this->echoHTML($HTMLbody);
+	
+	}
+
+	public function showTeamForTrade(PoolTeamList $teamlist)
+	{
+		
+
+		$contentString = 
+					 "
+					<form method=post >
+						<fieldset class='fieldaddevent'>
+							<legend>Choose team in pool for trade</legend>
+							$this->message
+							<span style='white-space: nowrap'>Team:</span>
+							<select name='$this->dropdownpickteamfortrade'>";
+							 foreach($teamlist->toArray() as $team)
+							 {
+							 	$contentString.= "<option value='". $team->getName()."'>".$team->getName()."</option>";
+							 }
+							 
+							 $contentString .= "</select>
+							 <br>
+							<span style='white-space: nowrap'></span> <input type='submit' name='$this->chooseTeamTradeBtn'  value='Choose'>
+						</fieldset>
+					</form>";
+					$HTMLbody = "<div class='divaddevent'>
+					<h1>Trade player</h1>
+					<p><a href='?login'>Back</a></p>
+					$contentString<br>
+					</div>";
+					$this->echoHTML($HTMLbody);
+	
+	}
+
+	public function showTeamPlayerstoTrade(TeamPlayerList $teamplayerlist, ApiPlayerList $playerlist)
+	{
+		
+
+		$contentString = 
+					 "
+					<form method=post >
+						<fieldset class='fieldaddevent'>
+							<legend>Trade player to team</legend>
+							$this->message
+							<span style='white-space: nowrap'>Pick this player:</span>
+							<select name='$this->dropdownpicktradeapiplayer'>";
+							 foreach($playerlist->toArray() as $player)
+							 {
+							 	$contentString.= "<option value='". $player->getName()."'>".$player->getName()."</option>";
+							 }
+							 
+							 $contentString .= "</select>
+							 <br>
+							 <span style='white-space: nowrap'>Switch out this player:</span>
+							 <select name='$this->dropdownpicktradeteamplayer'>";
+							 foreach($teamplayerlist->toArray() as $teamplayer)
+							 {
+							 	$contentString.= "<option value='". $teamplayer->getName()."'>".$teamplayer->getName()."</option>";
+							 }
+							 
+							 $contentString .= "</select>
+							 <br>
+							<span style='white-space: nowrap'></span> <input type='submit' name='$this->tradePlayerToTeamBtn'  value='Trade'>
+						</fieldset>
+					</form>";
+					$HTMLbody = "<div class='divaddevent'>
+					<h1>Trade</h1>
+					<p><a href='?login'>Back</a></p>
+					$contentString<br>
+					</div>";
+					$this->echoHTML($HTMLbody);
+	
+	}
+
 	public function showPickedPoolTeams(PoolTeamList $teamlist, $pool)
 	{
 		
@@ -176,6 +293,83 @@ class PoolView extends HTMLView{
 		if(isset($_POST[$this->createPoolName]))
 		{
 			return $_POST[$this->createPoolName];
+		}
+		else{
+			return false;
+		}
+	}
+
+	public function didUserPressPoolForTradeBtn()
+	{
+		if(isset($_POST[$this->choosePoolTradeBtn]))
+		{
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+
+	public function getPoolForTradeInput()
+	{
+		if(isset($_POST[$this->dropdownpickpoolfortrade]))
+		{
+			return $_POST[$this->dropdownpickpoolfortrade];
+		}
+		else{
+			return false;
+		}
+	}
+
+	public function didUserPressTeamForTradeBtn()
+	{
+		if(isset($_POST[$this->chooseTeamTradeBtn]))
+		{
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+
+	public function getTeamForTradeInput()
+	{
+		if(isset($_POST[$this->dropdownpickteamfortrade]))
+		{
+			return $_POST[$this->dropdownpickteamfortrade];
+		}
+		else{
+			return false;
+		}
+	}
+
+	public function didUserPressPlayerForTradeBtn()
+	{
+		if(isset($_POST[$this->tradePlayerToTeamBtn]))
+		{
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
+
+	public function getTeamPlayerForTradeInput()
+	{
+		if(isset($_POST[$this->dropdownpicktradeteamplayer]))
+		{
+			return $_POST[$this->dropdownpicktradeteamplayer];
+		}
+		else{
+			return false;
+		}
+	}
+
+	public function getApiPlayerForTradeInput()
+	{
+		if(isset($_POST[$this->dropdownpicktradeapiplayer]))
+		{
+			return $_POST[$this->dropdownpicktradeapiplayer];
 		}
 		else{
 			return false;
@@ -295,5 +489,10 @@ class PoolView extends HTMLView{
 	public function successfulAddPlayerToTeam()
 	{
 		$this->showMessage("Player was added to team");
+	}
+
+	public function successfulTradedPlayerToTeam()
+	{
+		$this->showMessage("Player was traded to team");
 	}
 }
